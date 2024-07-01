@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6cab6741c10022c4cb0ec91b51592bb0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - NumberPrefab: {fileID: 1715071976615528519, guid: 9104619c086d69247a6f5d6973b6fa66, type: 3}
+  - GoalPrefab: {fileID: 2259555830991694882, guid: 800c35188067b0c48af0e10ab77337a1, type: 3}
+  - EditorNumbers: {fileID: 11400000, guid: b0cf272de34ec224d8a64c2ff03e6326, type: 2}
+  - _randomNumberSO: {fileID: 11400000, guid: cfd48f8d188a1a74e85e4cd6797211f0, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
