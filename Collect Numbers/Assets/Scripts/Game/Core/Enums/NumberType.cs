@@ -10,6 +10,5 @@
         Number5,
         Unique,
         Random,
-        Empty,
     }
 }

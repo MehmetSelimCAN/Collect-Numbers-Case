@@ -7,26 +7,34 @@ namespace Assets.Scripts.Game.EditorBase
     public class EditorGoal : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
-        [SerializeField] private TextMeshPro goalText;
+        [SerializeField] private TextMeshPro goalCountText;
+        [SerializeField] private TextMeshPro goalNumberText;
 
         [HideInInspector] public NumberType NumberType;
         [HideInInspector] public int GoalCount;
+
+        [SerializeField] private Color _toBeFilledColor;
+        [SerializeField] private Color[] _numberColors;
+
+        [SerializeField] private string[] _numberTexts;
 
         public void ChangeGoalImage(NumberType numberType)
         {
             if (numberType == NumberType.Random)
             {
-                spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/ToBeFilled");
+                spriteRenderer.color = _toBeFilledColor;
+                goalNumberText.SetText("Select Type");
             }
             else
             {
-                spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/" + numberType.ToString());
+                spriteRenderer.color = _numberColors[(int)NumberType - 1];
+                goalNumberText.SetText(_numberTexts[(int)NumberType - 1]);
             }
         }
 
-        public void ChangeGoalText(int goalCount)
+        public void ChangeGoalCountText(int goalCount)
         {
-            goalText.SetText(goalCount.ToString());
+            goalCountText.SetText(goalCount.ToString());
         }
     }
 }

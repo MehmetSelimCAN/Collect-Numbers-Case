@@ -8,6 +8,7 @@ using Assets.Scripts.Game.EditorBase;
 using Assets.Scripts.SO;
 using Assets.Scripts.Game.Core.BoardBase;
 using Assets.Scripts.Game.Core.Enums;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -77,7 +78,8 @@ namespace Assets.Scripts.Editor
         private void OnDisable()
         {
             SceneView.duringSceneGui -= OnSceneGUI;
-            ClearLevel();
+            ClearGrid();
+            ClearGoals();
         }
 
         [MenuItem("Editor/Level Editor")]
@@ -99,6 +101,13 @@ namespace Assets.Scripts.Editor
 
             EditorGUILayout.EndHorizontal();
 
+            if (EditorGUI.EndChangeCheck())
+            {
+                CreateGrid();
+            }
+
+            EditorGUI.BeginChangeCheck();
+
             GUILayout.Label("Goal Count");
             EditorGUILayout.BeginHorizontal();
 
@@ -106,6 +115,13 @@ namespace Assets.Scripts.Editor
             _goalCount = EditorGUILayout.IntField(_goalCount, GUILayout.Width(30));
 
             EditorGUILayout.EndHorizontal();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                CreateGoals();
+            }
+
+            EditorGUI.BeginChangeCheck();
 
             GUILayout.Label("Goals Counts");
             EditorGUILayout.BeginHorizontal();
@@ -117,6 +133,12 @@ namespace Assets.Scripts.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                UpdateGoalCounts();
+            }
+
 
             GUILayout.Label("Move Count");
             EditorGUILayout.BeginHorizontal();
@@ -139,11 +161,6 @@ namespace Assets.Scripts.Editor
             _randomNumbersSO = EditorGUILayout.ObjectField(_randomNumbersSO, typeof(NumberListSO), false, GUILayout.Height(EditorGUIUtility.singleLineHeight)) as NumberListSO;
 
             EditorGUILayout.EndHorizontal();
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                CreateGrid();
-            }
 
             GUILayout.Space(10);
             GUILayout.Label("Number Type");
@@ -221,8 +238,8 @@ namespace Assets.Scripts.Editor
 
                     if (hitInfo.collider.TryGetComponent(out EditorGoal goalUnderMouse))
                     {
-                        goalUnderMouse.ChangeGoalImage(_currentNumberSO.NumberData.NumberType);
                         goalUnderMouse.NumberType = _currentNumberSO.NumberData.NumberType;
+                        goalUnderMouse.ChangeGoalImage(_currentNumberSO.NumberData.NumberType);
                     }
                 }
             }
@@ -309,31 +326,33 @@ namespace Assets.Scripts.Editor
             return data;
         }
 
-        public void ClearLevel()
+        public void ClearGrid()
         {
             DestroyImmediate(GameObject.Find("Numbers Parent"));
-            DestroyImmediate(GameObject.Find("Goals Parent"));
             _numbers = FindObjectsOfType<EditorNumber>();
-            _goals = FindObjectsOfType<EditorGoal>();
 
             for (int i = 0; i < _numbers.Length; i++)
             {
                 DestroyImmediate(_numbers[i].gameObject);
             }
 
+            _currentNumberSO = EditorNumbers.numbers.list.Find(x => x == _randomNumberSO);
+        }
+
+        public void ClearGoals()
+        {
+            DestroyImmediate(GameObject.Find("Goals Parent"));
+            _goals = FindObjectsOfType<EditorGoal>();
             for (int i = 0; i < _goals.Length; i++)
             {
                 DestroyImmediate(_goals[i].gameObject);
             }
-
-            _currentNumberSO = EditorNumbers.numbers.list.Find(x => x == _randomNumberSO);
         }
 
         private void CreateGrid()
         {
-            ClearLevel();
+            ClearGrid();
             _numbersParent = new GameObject("Numbers Parent").transform;
-            _goalsParent = new GameObject("Goals Parent").transform;
 
             for (int j = _gridHeight - 1; j >= 0; j--)
             {
@@ -345,6 +364,14 @@ namespace Assets.Scripts.Editor
                 }
             }
 
+            SetPosition(_gridWidth, _gridHeight);
+        }
+
+        private void CreateGoals()
+        {
+            _currentNumberSO = EditorNumbers.numbers.list.Find(x => x == _randomNumberSO);
+            ClearGoals();
+            _goalsParent = new GameObject("Goals Parent").transform;
             for (int i = 0; i < _goalCount; i++)
             {
                 var goalsCount = goalCountsArray[i];
@@ -352,7 +379,6 @@ namespace Assets.Scripts.Editor
                                         goalsYPosition),
                                         _currentNumberSO.NumberData.NumberType, goalsCount);
             }
-
             SetPosition(_gridWidth, _gridHeight);
         }
 
@@ -370,7 +396,17 @@ namespace Assets.Scripts.Editor
             goal.NumberType = numberType;
 
             goal.ChangeGoalImage(numberType);
-            goal.ChangeGoalText(goalCount);
+            goal.ChangeGoalCountText(goalCount);
+        }
+
+        public void UpdateGoalCounts()
+        {
+            _goals = (EditorGoal[])FindObjectsByType(typeof(EditorGoal), FindObjectsSortMode.InstanceID);
+            for (int i = _goals.Length - 1, j = 0; i >= 0; i--, j++)
+            {
+                _goals[i].GoalCount = goalCountsArray[j];
+                _goals[i].ChangeGoalCountText(goalCountsArray[j]);
+            }
         }
 
         private void SetPosition(int width, int height)

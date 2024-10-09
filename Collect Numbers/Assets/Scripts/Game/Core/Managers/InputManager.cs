@@ -32,9 +32,13 @@ namespace Assets.Scripts.Game.Core.Managers
             EventManager.OnCellFallsStarted += DisableInput;
             EventManager.OnCellFallsFinished += EnableInput;
 
+            EventManager.OnCellExplodeAnimationStarted += DisableInput;
+            EventManager.OnCellExplodeAnimationEnded += EnableInput;
+
             EventManager.OnMoveCountFinished += DisableInput;
 
             EventManager.OnLevelFinished += DisableInput;
+
         }
 
         private void DisableInput()
@@ -53,6 +57,9 @@ namespace Assets.Scripts.Game.Core.Managers
 
             EventManager.OnCellFallsStarted -= DisableInput;
             EventManager.OnCellFallsFinished -= EnableInput;
+
+            EventManager.OnCellExplodeAnimationStarted -= DisableInput;
+            EventManager.OnCellExplodeAnimationEnded -= EnableInput;
 
             EventManager.OnMoveCountFinished -= DisableInput;
 

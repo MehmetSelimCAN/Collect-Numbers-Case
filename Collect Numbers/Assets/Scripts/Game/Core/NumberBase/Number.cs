@@ -4,7 +4,9 @@ using Assets.Scripts.Game.Core.Managers;
 using Assets.Scripts.Game.Core.Managers.PoolSystem;
 using Assets.Scripts.Game.Mechanics;
 using Assets.Scripts.SO;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts.Game.Core.NumberBase
@@ -12,13 +14,16 @@ namespace Assets.Scripts.Game.Core.NumberBase
     public class Number : MonoBehaviour
     {
         private SpriteRenderer _spriteRenderer;
+        private TextMeshPro _numberText;
 
         private NumberData _numberData;
         public NumberData NumberData { get { return _numberData; } }
         private NumberListSO _numbersListSO;
 
-        public FallAnimation FallAnimation;
-        public ScaleAnimation ScaleAnimation;
+        [HideInInspector] public FallAnimation FallAnimation;
+        [HideInInspector] public ScaleAnimation ScaleAnimation;
+
+        private WaitForSeconds _cellExplodeAnimationTime = new WaitForSeconds(0.55f);
 
         private Cell _cell;
         public Cell Cell
@@ -44,7 +49,8 @@ namespace Assets.Scripts.Game.Core.NumberBase
             }
         }
 
-        private ImageLibrary _imageLibrary;
+        private ColorLibrary _colorLibrary;
+        private TextLibrary _textLibrary;
         private NumberFactory _numberFactory;
 
         public void PrepareNumber(NumberData numberData, Cell cell, NumberBase numberBase)
@@ -60,18 +66,15 @@ namespace Assets.Scripts.Game.Core.NumberBase
             ScaleAnimation = numberBase.ScaleAnimation;
             ScaleAnimation.Number = this;
 
-            _imageLibrary = ServiceProvider.GetImageLibrary;
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            _numberText = GetComponentInChildren<TextMeshPro>();
+
+            _colorLibrary = ServiceProvider.GetColorLibrary;
+            _textLibrary = ServiceProvider.GetTextLibrary;
             _numberFactory = ServiceProvider.GetNumberFactory;
 
-            if (TryGetComponent(out SpriteRenderer spriteRenderer))
-            {
-                _spriteRenderer = spriteRenderer;
-            }
-
-            if (_spriteRenderer == null)
-                _spriteRenderer = AddSprite(_imageLibrary.GetSpriteForNumberType(_numberData.NumberType));
-            else
-                UpdateSprite();
+            UpdateSpriteColor();
+            UpdateNumberText();
         }
 
         public void ChangeNumberData(NumberData numberData)
@@ -89,7 +92,8 @@ namespace Assets.Scripts.Game.Core.NumberBase
             else
             {
                 _numberData = numberData;
-                UpdateSprite();
+                UpdateSpriteColor();
+                UpdateNumberText();
             }
         }
 
@@ -101,22 +105,25 @@ namespace Assets.Scripts.Game.Core.NumberBase
             ChangeNumberData(numberData);
         }
 
-        private SpriteRenderer AddSprite(Sprite sprite)
+        private void UpdateSpriteColor()
         {
-            var spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = sprite;
-
-            return spriteRenderer;
+            _spriteRenderer.color = _colorLibrary.GetColorForNumberType(_numberData.NumberType);
         }
 
-        private void UpdateSprite()
+        private void UpdateNumberText()
         {
-            _spriteRenderer.sprite = _imageLibrary.GetSpriteForNumberType(_numberData.NumberType);
+            string numberString = _textLibrary.GetTextForNumberType(_numberData.NumberType);
+            _numberText.SetText(numberString);
         }
 
         public void Fall()
         {
             FallAnimation.FallTo(Cell.GetFallTarget());
+        }
+
+        public void Highlight()
+        {
+            ScaleAnimation.Highlight();
         }
 
         public void Expand()
@@ -131,6 +138,17 @@ namespace Assets.Scripts.Game.Core.NumberBase
 
         public virtual void TryToExecute(bool isExecutedFromMatch, List<Cell> toBeDestroyedCells)
         {
+            StartCoroutine(RemoveNumberCo());
+        }
+
+        private IEnumerator RemoveNumberCo()
+        {
+            Highlight();
+
+            EventManager.OnCellExplodeAnimationStarted?.Invoke();
+            yield return _cellExplodeAnimationTime;
+            EventManager.OnCellExplodeAnimationEnded?.Invoke();
+
             RemoveNumber();
         }
 

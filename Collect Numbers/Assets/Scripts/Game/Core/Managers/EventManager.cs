@@ -29,5 +29,8 @@ namespace Assets.Scripts.Game.Core.Managers
         public static UnityAction OnCellFallsStarted = delegate { };
         public static UnityAction OnCellFallsFinished = delegate { };
 
+        public static UnityAction OnCellExplodeAnimationStarted = delegate { };
+        public static UnityAction OnCellExplodeAnimationEnded = delegate { };
+
     }
 }

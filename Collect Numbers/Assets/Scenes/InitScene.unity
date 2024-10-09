@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 504585620}
   - component: {fileID: 504585635}
   - component: {fileID: 504585636}
+  - component: {fileID: 504585637}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -233,12 +234,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f047cbef00928dc42a53989b7a0832b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  number1Sprite: {fileID: 21300000, guid: 42e249dc3b6139e4983b46740848342c, type: 3}
-  number2Sprite: {fileID: 21300000, guid: 8705333eddd43554fbcf2264fc028dfe, type: 3}
-  number3Sprite: {fileID: 21300000, guid: 965e0ee4a891c8d4ea7a91dfc09e7658, type: 3}
-  number4Sprite: {fileID: 21300000, guid: 47f606e7b8d9988449b3df54e637813d, type: 3}
-  number5Sprite: {fileID: 21300000, guid: 5008f782dc4c9564eb76686626aba187, type: 3}
-  uniqueSprite: {fileID: 21300000, guid: 951d09f93b2aea846a3ce6e66203c033, type: 3}
+  _number1Color: {r: 0.92549026, g: 0.10980393, b: 0.14117648, a: 1}
+  _number2Color: {r: 0.054901965, g: 0.8196079, b: 0.27058825, a: 1}
+  _number3Color: {r: 0, g: 0.65882355, b: 0.95294124, a: 1}
+  _number4Color: {r: 1, g: 0.49803925, b: 0.15294118, a: 1}
+  _number5Color: {r: 0.72156864, g: 0.2392157, b: 0.7294118, a: 1}
+  _uniqueColor: {r: 0.98977304, g: 1, b: 0, a: 1}
+--- !u!114 &504585637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504585619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37d892d78a71da342bf7cc57d5c4c1c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _number1Text: 1
+  _number2Text: 2
+  _number3Text: 3
+  _number4Text: 4
+  _number5Text: 5
+  _uniqueText: "\u2665"
 --- !u!1 &1554566770
 GameObject:
   m_ObjectHideFlags: 0

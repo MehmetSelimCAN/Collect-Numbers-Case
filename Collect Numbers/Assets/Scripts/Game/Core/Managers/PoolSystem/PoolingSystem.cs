@@ -9,9 +9,11 @@ namespace Assets.Scripts.Game.Core.Managers.PoolSystem
     {
         [SerializeField] private List<Pool> _pools = new List<Pool>();
         [SerializeField] private int _defaultSize = 20;
+        private Transform _canvasTransform;
 
         protected override void Awake()
         {
+            _canvasTransform = GameObject.Find("Canvas").transform;
             InitPoolObjects();
             base.Awake();
         }
@@ -27,7 +29,15 @@ namespace Assets.Scripts.Game.Core.Managers.PoolSystem
 
                 for (int j = 0; j < _tempSize; j++)
                 {
-                    GameObject obj = Instantiate(_pools[i].Prefab, transform);
+                    GameObject obj;
+                    if (_pools[i].PoolID == "GoalAnimation")
+                    {
+                        obj = Instantiate(_pools[i].Prefab, _canvasTransform);
+                    }
+                    else
+                    {
+                        obj = Instantiate(_pools[i].Prefab, transform);
+                    }
                     obj.SetActive(false);
 
                     if (!obj.TryGetComponent(out PoolObject _))
@@ -54,7 +64,16 @@ namespace Assets.Scripts.Game.Core.Managers.PoolSystem
                         }
                     }
 
-                    GameObject obj = Instantiate(_pools[i].Prefab, transform);
+                    GameObject obj;
+                    if (ID == "GoalAnimation")
+                    {
+                        obj = Instantiate(_pools[i].Prefab, _canvasTransform);
+                    }
+                    else
+                    {
+                        obj = Instantiate(_pools[i].Prefab, transform);
+                    }
+
                     if (!obj.TryGetComponent(out PoolObject _))
                         obj.AddComponent<PoolObject>().Initialize(_pools[i].PoolID);
 
@@ -83,7 +102,15 @@ namespace Assets.Scripts.Game.Core.Managers.PoolSystem
             cloneObj.transform.position = transform.position;
             cloneObj.transform.rotation = transform.rotation;
             cloneObj.GetComponent<PoolObject>().OnBackToPool();
-            cloneObj.transform.SetParent(transform);
+
+            if (cloneObj.GetComponent<PoolObject>().poolID == "GoalAnimation")
+            {
+                cloneObj.transform.SetParent(_canvasTransform);
+            }
+            else
+            {
+                cloneObj.transform.SetParent(transform);
+            }
 
             cloneObj.SetActive(false);
         }

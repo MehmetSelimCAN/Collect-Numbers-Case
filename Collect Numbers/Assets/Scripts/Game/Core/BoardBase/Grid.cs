@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Game.Core.Enums;
 using Assets.Scripts.Game.Core.Managers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -80,7 +81,6 @@ namespace Assets.Scripts.Game.Core.BoardBase
             {
                 DestroyMatchedCells(sameTypeCells);
             }
-
         }
 
         private void UnsubscribeEvents()

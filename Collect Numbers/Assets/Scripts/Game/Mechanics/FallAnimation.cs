@@ -6,11 +6,13 @@ namespace Assets.Scripts.Game.Mechanics
 {
     public class FallAnimation : MonoBehaviour
     {
-        public Number Number;
+        [HideInInspector] public Number Number;
         public bool IsFalling { get; private set; }
         [HideInInspector] public Cell TargetCell;
 
+
         private static float _startVel = 10f;
+        private static float _acc = 0.4f;
         private static float _maxSpeed = 20f;
 
         private float _vel = _startVel;
@@ -30,6 +32,7 @@ namespace Assets.Scripts.Game.Mechanics
         {
             if (!IsFalling) return;
 
+            _vel += _acc;
             _vel = _vel >= _maxSpeed ? _maxSpeed : _vel;
             var p = Number.transform.position;
             p.y -= _vel * Time.deltaTime;

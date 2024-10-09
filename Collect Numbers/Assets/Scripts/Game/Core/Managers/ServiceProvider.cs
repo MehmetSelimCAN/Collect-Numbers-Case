@@ -35,9 +35,14 @@ namespace Assets.Scripts.Game.Core.Managers
             get { return GetManager<ParticleManager>(); }
         }
 
-        public static ImageLibrary GetImageLibrary
+        public static ColorLibrary GetColorLibrary
         {
-            get { return GetManager<ImageLibrary>(); }
+            get { return GetManager<ColorLibrary>(); }
+        }
+
+        public static TextLibrary GetTextLibrary
+        {
+            get { return GetManager<TextLibrary>(); }
         }
     }
 }

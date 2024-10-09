@@ -1,16 +1,22 @@
 ﻿using Assets.Scripts.Game.Core.BoardBase;
-using Assets.Scripts.Game.Core.Enums;
 using Assets.Scripts.Game.Core.Managers;
 using Assets.Scripts.Game.Core.Managers.PoolSystem;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Game.Core.GoalBase
 {
     public class GoalAnimationManager : MonoBehaviour
     {
-        private float _animationTime = 0.75f;
-        
+        private float _animationSpeed = 1500f;
+        private ColorLibrary _colorLibrary;
+
+        private void Start()
+        {
+            _colorLibrary = ServiceProvider.GetColorLibrary;
+        }
+
         private void OnEnable()
         {
             SubscribeEvents();
@@ -23,31 +29,17 @@ namespace Assets.Scripts.Game.Core.GoalBase
 
         private void PlayAnimation(Goal goal, Cell cell)
         {
-            string animationPrefabID = GetAnimationPrefabIDForNumberType(cell.Number.NumberData.NumberType);
-            GameObject animation = PoolingSystem.Instance.InstantiatePoolObject(animationPrefabID, cell.transform.position);
-            PoolingSystem.Instance.DestroyPoolObject(animation, _animationTime);
+            string animationPrefabID = "GoalAnimation";
+            Vector3 startPosition = Camera.main.WorldToScreenPoint(cell.transform.position);
+            GameObject animation = PoolingSystem.Instance.InstantiatePoolObject(animationPrefabID, startPosition);
+            animation.GetComponent<Image>().color = _colorLibrary.GetColorForNumberType(goal.GoalNumberType);
 
-            Vector3 targetPosition = Camera.main.ScreenToWorldPoint(goal.transform.position);
-            animation.transform.DOMove(targetPosition, _animationTime).OnComplete(() => EventManager.OnGoalAnimationCompleted?.Invoke(goal));
-        }
-
-        private string GetAnimationPrefabIDForNumberType(NumberType numberType)
-        {
-            switch (numberType)
-            {
-                case NumberType.Number1:
-                    return "Number1GoalAnimation";
-                case NumberType.Number2:
-                    return "Number2GoalAnimation";
-                case NumberType.Number3:
-                    return "Number3GoalAnimation";
-                case NumberType.Number4:
-                    return "Number4GoalAnimation";
-                case NumberType.Number5:
-                    return "Number5GoalAnimation";
-                default:
-                    return null;
-            }
+            float _animationTime = Vector3.Magnitude(goal.transform.position - startPosition) / _animationSpeed;
+            animation.transform.DOMove(goal.transform.position, _animationTime).SetEase(Ease.InOutSine).OnComplete(() =>
+                {
+                    PoolingSystem.Instance.DestroyPoolObject(animation);
+                    EventManager.OnGoalAnimationCompleted?.Invoke(goal);
+                });
         }
 
         private void UnsubscribeEvents()
